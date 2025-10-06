@@ -124,11 +124,11 @@ end
 ---@module 'lspconfig.configs'
 
 ---@param server_config TailwindTools.ServerOption
----@param lspconfig { tailwindcss: lspconfig.Config }
-M.setup = function(server_config, lspconfig)
+---@param lspconfig_util { root_pattern: fun(...: string): fun(fname: string): string? }
+M.setup = function(server_config, lspconfig_util)
   local conf = { settings = {} }
   conf.on_attach = M.make_on_attach(server_config.on_attach)
-  conf.root_dir = server_config.root_dir or M.make_root_dir(lspconfig)
+  conf.root_dir = server_config.root_dir or M.make_root_dir(lspconfig_util)
 
   conf.settings.tailwindCSS = vim.tbl_get(server_config, "settings", "tailwindCSS") or {}
   conf.settings.tailwindCSS =
@@ -144,21 +144,22 @@ M.setup = function(server_config, lspconfig)
     dynamicRegistration = true,
   }
 
-  lspconfig.tailwindcss.setup(conf)
+  -- NOTE: mason lsp config load
+  -- vim.lsp.config("tailwindcss", conf)
 end
 
 ---@type fun(lspconfig: any)
 ---@return function(fname: string): string?
-M.make_root_dir = function(lspconfig)
+M.make_root_dir = function(lspconfig_util)
   return function(fname)
-    local root_files = lspconfig.util.insert_package_json({
+    local root_files = lspconfig_util.insert_package_json({
       "tailwind.config.{js,cjs,mjs,ts}",
       "assets/tailwind.config.{js,cjs,mjs,ts}",
       "theme/static_src/tailwind.config.{js,cjs,mjs,ts}",
       "app/assets/stylesheets/application.tailwind.css",
       "app/assets/tailwind/application.css",
     }, "tailwindcss", fname)
-    return lspconfig.util.root_pattern(root_files)(fname)
+    return lspconfig_util.root_pattern(root_files)(fname)
   end
 end
 
