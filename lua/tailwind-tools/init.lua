@@ -75,10 +75,10 @@ M.setup = function(options)
 
   local server_opts = config.options.server
   local has_telescope, telescope = pcall(require, "telescope")
-  local has_lspconfig, lspconfig = pcall(require, "lspconfig")
+  local has_lspconfig, lspconfig_util = pcall(require, "lspconfig.util")
 
   if has_telescope then telescope.load_extension("tailwind") end
-  if has_lspconfig and server_opts.override then lsp.setup(server_opts, lspconfig) end
+  if has_lspconfig and server_opts.override then lsp.setup(server_opts, lspconfig_util) end
   if config.options.keymaps.smart_increment.enabled then keymaps.set_smart_increment() end
 
   register_usercmd()
