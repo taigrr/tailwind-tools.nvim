@@ -110,7 +110,7 @@ local function sort_classes(ranges, bufnr, sync)
   end
 
   if sync then
-    local response = client:request_sync("@/tailwindCSS/sortSelection", params, 2000, bufnr)
+    local response = client:request_sync("@/tailwindCSS/sortSelection", params, 10000, bufnr)
 
     if response then
       handler(response.err, response.result)
@@ -262,7 +262,7 @@ M.sort_selection = function(sync)
   local s_row, s_col, e_row, e_col = utils.get_visual_range()
   local class_ranges = { { s_row, s_col, e_row, e_col } }
 
-  sort_classes(class_ranges, bufnr, sync)
+  sort_classes(class_ranges, bufnr, sync == true)
 end
 
 ---@param sync boolean
@@ -270,7 +270,7 @@ M.sort_classes = function(sync)
   local bufnr = vim.api.nvim_get_current_buf()
   local class_ranges = classes.get_ranges(bufnr, { sortable = true })
 
-  sort_classes(class_ranges, bufnr, sync)
+  sort_classes(class_ranges, bufnr, sync == true)
 end
 
 return M
